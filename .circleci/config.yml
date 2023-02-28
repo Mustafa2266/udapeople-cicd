@@ -199,7 +199,9 @@ jobs:
 
   configure-infrastructure:
     docker:
-       - image: cimg/python:3.10
+      # - image: cimg/python:3.10
+      - image: prooph/ansible-aws-cli
+
     steps:
       - checkout
       - install_ansible
