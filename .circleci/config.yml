@@ -1,6 +1,24 @@
 version: 2.1
 
 commands:
+
+  install_awscli:
+    description: install AWS CLI
+    steps:
+      - run:
+          name: Install AWS CLI
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+  install_ansible:
+    description: Install Ansible
+    steps:
+    - run:
+        name: Install Ansible
+        command: |
+          python3 -m pip install --user ansible
+
   destroy-environment:
       description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
       parameters:
@@ -199,13 +217,13 @@ jobs:
 
   configure-infrastructure:
     docker:
-      # - image: cimg/python:3.10
-      - image: prooph/ansible-aws-cli
+      - image: cimg/python:3.10
+      #- image: prooph/ansible-aws-cli
 
     steps:
       - checkout
-      #- install_ansible
-      #- install_awscli
+      - install_ansible
+      - install_awscli
       - add_ssh_keys:
           fingerprints: ["68:b5:36:5d:13:c1:f4:a9:0d:58:e2:4a:3c:32:1a:da"]
       - attach_workspace:
