@@ -57,7 +57,7 @@ commands:
       # Add parameter here  
       Workflow_ID:
         type: string
-        default: ${CIRCLE_WORKFLOW_ID:0:7}   
+        #default: ${CIRCLE_WORKFLOW_ID:0:7}   
     steps:
       - run:
           name: Revert migrations
@@ -68,13 +68,12 @@ commands:
             SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.Workflow_ID >>)
 
             # Logic for reverting the database state
-            SUCCESS = 1
+            #  SUCCESS = 1
             if(( $SUCCESS==1 )); 
             then
               cd ~/project/backend
               npm install
               npm run migration:revert
-
             fi
             
 jobs:
@@ -264,12 +263,13 @@ jobs:
   run-migrations:
     docker:
       # Docker image here that supports NodeJS
-      - image: cimg/python:3.10
+      #- image: cimg/python:3.10
+      - image: cimg/node:13.8.0
     steps:
       # Checkout code from git
       - checkout
       - install_awscli
-      - install_nodejs
+      #- install_nodejs
       - restore_cache:
           keys: [backend-deps]
       - run:
@@ -280,7 +280,7 @@ jobs:
             npm run migrations > migrations_dump.txt
             cat migrations_dump.txt
       - run:
-          name: Send migration results to memstash
+          name: Send migration results to kvdb.io
           command: |
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
