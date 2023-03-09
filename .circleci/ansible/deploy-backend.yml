@@ -46,7 +46,7 @@
   # apt:
   #   name: python3
   #   update_cache: yes
-      raw: test -e /usr/bin/python3 || (apt -y update && apt install -y python3 && apt install -y python3-pip)
+      raw: test -e /usr/bin/python3 || (apt -y update && apt install -y python3)
       changed_when: false
 
     - setup
