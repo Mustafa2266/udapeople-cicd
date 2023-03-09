@@ -18,6 +18,10 @@ commands:
         name: Install Ansible
         command: |
           # sudo apt install -y python3-pip
+          #install pip
+          sudo apt update
+          sudo apt install python3-pip
+
           python3 -m pip install --user ansible
   install_nodejs:
     description: Install Node.js 13.8.0
@@ -347,9 +351,11 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      - install_ansible
       - install_awscli
       - install_nodejs
+      - install_ansible
+      # - install_awscli
+      # - install_nodejs
 
       - restore_cache:
           keys: [backend-deps]
