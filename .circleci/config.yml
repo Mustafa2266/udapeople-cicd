@@ -343,7 +343,7 @@ jobs:
     docker:
       # Docker image here that supports Ansible
       - image: cimg/base:stable
-      #- image: cimg/python:3.11.2
+      #- image: cimg/python:3.10
     steps:
       # Checkout code from git
       - checkout
