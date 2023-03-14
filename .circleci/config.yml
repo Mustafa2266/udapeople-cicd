@@ -47,7 +47,7 @@ commands:
             sudo apt install -y nodejs
             
             sudo apt install aptitude
-            sudo aptitude install npm
+            sudo aptitude install npm -y
 
 
 
