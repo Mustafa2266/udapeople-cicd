@@ -9,12 +9,12 @@
     src: artifact.tar.gz
     dest: ~/backend-app
 
-- name: "Installing Node Dependencies"
-  shell: |
+# - name: "Installing Node Dependencies"
+#   shell: |
 
-    # sudo apt-get install npm
-    cd ~/backend-app
-    npm i
+#     # sudo apt-get install npm
+#     cd ~/backend-app
+#     npm i
 
 - name: "Executing Node app with PM2"
   shell: |
