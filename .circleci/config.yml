@@ -386,6 +386,7 @@ jobs:
           command: |
             cd backend
             npm install
+            npm audit fix
       - run:
           name: Package backend
           command: |
