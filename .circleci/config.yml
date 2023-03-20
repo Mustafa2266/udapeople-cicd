@@ -275,11 +275,6 @@ jobs:
           fingerprints: ["68:b5:36:5d:13:c1:f4:a9:0d:58:e2:4a:3c:32:1a:da"]
       - attach_workspace:
           at: ~/
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       # Your code here
-      #       exit 1
       - run:
           name: Configure server
           command: |
@@ -287,8 +282,6 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment
-      # Here's where you will add some code to rollback on failure      
-
   run-migrations:
     docker:
       # Docker image here that supports NodeJS
@@ -360,21 +353,17 @@ jobs:
                     
   deploy-backend:
     docker:
-      # Docker image here that supports Ansible
       - image: cimg/base:stable
-      #- image: cimg/python:3.11.2
     steps:
       - checkout
       - install_awscli
       - install_ansible
       - install_nodejs
-
       - restore_cache:
           keys: [backend-deps]
       # Add ssh keys with fingerprint
       - add_ssh_keys:
           fingerprints: ["68:b5:36:5d:13:c1:f4:a9:0d:58:e2:4a:3c:32:1a:da"]
-      # attach workspace
       - attach_workspace:
           at: ~/
       - run:
