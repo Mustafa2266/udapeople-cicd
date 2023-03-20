@@ -364,7 +364,6 @@ jobs:
       - image: cimg/base:stable
       #- image: cimg/python:3.11.2
     steps:
-      # Checkout code from git
       - checkout
       - install_awscli
       - install_ansible
