@@ -11,8 +11,6 @@
 
 - name: "Installing Node Dependencies"
   shell: |
-
-    # sudo apt-get install npm
     cd ~/backend-app
     npm i
 
