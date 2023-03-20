@@ -370,9 +370,6 @@ jobs:
       - install_ansible
       - install_nodejs
 
-      # - install_awscli
-      # - install_nodejs
-
       - restore_cache:
           keys: [backend-deps]
       # Add ssh keys with fingerprint
