@@ -1,7 +1,7 @@
 version: 2.1
 
 commands:
-
+  #comment
   install_awscli:
     description: install AWS CLI
     steps:
@@ -18,21 +18,22 @@ commands:
         name: Install Ansible
         command: |
           # sudo apt install -y python3-pip
-          python3 -m pip install --user ansible
+          #install pip
+          #sudo apt update
+          #sudo apt install python3-pip
+          #python3 -m pip install --user ansible
+
+          sudo apt update
+          sudo apt install software-properties-common -y
+          sudo add-apt-repository --yes --update ppa:ansible/ansible
+          sudo apt install ansible -y
+
   install_nodejs:
     description: Install Node.js 13.8.0
     steps:
       - run:
           name: Install Node.js 13
           command: |
-            # # Install Node.js LTS version as our base Node.js version
-            # curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-            # sudo apt install -y nodejs
-
-            # # Use n version manager to use Node.js v13.8.0
-            # sudo npm install --global n
-            # sudo n 13.8.0
-            #-----------------------------------------------------------
             # Install Node.js LTS version as our base Node.js version
             curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
             sudo apt install -y nodejs
@@ -40,6 +41,24 @@ commands:
             # Use n version manager to use Node.js v13.8.0
             sudo npm install --global n
             sudo n 13.8.0
+            # #-----------------------------------------------------------
+            # # Install Node.js LTS version as our base Node.js version
+            # curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+            # sudo apt install -y nodejs
+            
+            sudo npm install npm@6.13.6
+            sudo apt install aptitude -y
+            sudo aptitude install npm -y
+
+            # Use n version manager to use Node.js v13.8.0
+            sudo npm install --global n
+            sudo n 13.8.0
+
+            #install nvm
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+            source ~/.bashrc
+            #install pm2
+            sudo npm i -g pm2
 
   destroy-environment:
       description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -64,7 +83,8 @@ commands:
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
-      # Add parameter here  
+      # Add parameter here 
+      #add comment 
       Workflow_ID:
         type: string
         default: ${CIRCLE_WORKFLOW_ID:0:7}   
@@ -93,7 +113,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build]
+          keys: [frontend-deps]
       - run:
           name: Build front-end
           command: |
@@ -104,7 +124,7 @@ jobs:
             
       - save_cache:
           paths: [frontend/node_modules]
-          key: frontend-build
+          key: frontend-deps
 
   build-backend:
     docker:
@@ -112,7 +132,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build]
+          keys: [backend-deps]
       - run:
           name: Back-end build
           command: |
@@ -123,7 +143,7 @@ jobs:
              
       - save_cache:
           paths: [backend/node_modules]
-          key: backend-build
+          key: backend-deps
 
   test-frontend:
     docker:
@@ -140,9 +160,9 @@ jobs:
              npm install
              npm test
              
-      # - save_cache:
-      #     paths: [frontend/node_modules]
-      #     key: frontend-build
+      - save_cache:
+          paths: [frontend/node_modules]
+          key: frontend-deps
                 
   test-backend:
     docker:
@@ -159,9 +179,9 @@ jobs:
              npm install
              npm test
              
-      # - save_cache:
-      #     paths: [backend/node_modules]
-      #     key: backend-build
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-deps
             
   scan-frontend:
     docker:
@@ -256,11 +276,6 @@ jobs:
           fingerprints: ["68:b5:36:5d:13:c1:f4:a9:0d:58:e2:4a:3c:32:1a:da"]
       - attach_workspace:
           at: ~/
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       # Your code here
-      #       exit 1
       - run:
           name: Configure server
           command: |
@@ -268,8 +283,6 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment
-      # Here's where you will add some code to rollback on failure      
-
   run-migrations:
     docker:
       # Docker image here that supports NodeJS
@@ -341,38 +354,36 @@ jobs:
                     
   deploy-backend:
     docker:
-      # Docker image here that supports Ansible
       - image: cimg/base:stable
-      #- image: cimg/python:3.11.2
     steps:
-      # Checkout code from git
       - checkout
-      - install_ansible
       - install_awscli
+      - install_ansible
       - install_nodejs
-
       - restore_cache:
           keys: [backend-deps]
       # Add ssh keys with fingerprint
+
       - add_ssh_keys:
           fingerprints: ["68:b5:36:5d:13:c1:f4:a9:0d:58:e2:4a:3c:32:1a:da"]
-      # attach workspace
       - attach_workspace:
           at: ~/
       - run:
           name: Install dependencies
           command: |
-                  cd backend
-                  npm install
+            cd backend
+            npm install
+            npm audit fix
       - run:
-          name: Deploy backend
+          name: Package backend
           command: |
-                  cd backend
-                  npm run build
-                  tar -czf artifact.tar.gz dist/* package*
+            cd backend
+            npm run build
+            tar -czf artifact.tar.gz dist/* package*
 
-                  cd ..
-                  cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
+            # tar -czf artifact.tar.gz src/* package*
+            cd ..
+            cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
       - run:
           name: Deploy backend
           command: |
